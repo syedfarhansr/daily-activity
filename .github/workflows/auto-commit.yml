@@ -2,6 +2,7 @@ name: Daily Auto Commit
 
 on:
   schedule:
+    # 5 commits per day (UTC times)
     - cron: '30 2 * * *'
     - cron: '30 5 * * *'
     - cron: '30 8 * * *'
@@ -26,8 +27,9 @@ jobs:
         run: |
           echo "Updated on $(date)" >> activity.log
 
-      - name: Commit and push changes
+      - name: Commit and push changes (safe for multiple runs)
         run: |
+          git pull --rebase
           git add .
           git commit -m "Daily auto commit $(date)" || echo "No changes"
           git push

@@ -1,22 +1,29 @@
 name: Daily Auto Commit
 
 on:
-  schedule:
-    - cron: '30 6 * * *'
   workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"   # Runs daily at 12:00 AM UTC
 
 jobs:
   commit:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Make daily commit
+      - name: Set git identity
         run: |
-          echo "Updated on $(date)" >> activity.log
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Make daily change
+        run: |
+          echo "Last update: $(date)" > activity.log
+
+      - name: Commit and push changes
+        run: |
           git add .
-          git commit -m "Daily contribution update" || echo "No changes"
+          git commit -m "Daily auto commit" || echo "Nothing to commit"
           git push
